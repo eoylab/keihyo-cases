@@ -33,7 +33,7 @@ Registry 経由の導入は clone にもGitHubのtrafficにも現れないので
 | 指標 | 何を意味するか |
 |---|---|
 | **unique clones** | 手元へ置いた数。README を読んだだけでは増えない |
-| **.mcpb ダウンロード数** | **MCP Registry 経由の導入。clone には一切出ない別経路** |
+| **.mcpb ダウンロード数** | **MCP Registry 経由の導入。clone には一切出ない別経路**。**公開直後の 3 件は自分で取得した検証と Registry 側の検証なので、判定では 3 を差し引く** |
 | unique views | 到達 |
 | **referrers** | **MCP ディレクトリ経由なら開発者、検索経由なら実務者** |
 | paths | README で止まったか、`data/cases.json` まで取ったか |
