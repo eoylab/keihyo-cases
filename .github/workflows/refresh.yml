@@ -1,0 +1,107 @@
+# Re-reads the Consumer Affairs Agency's releases every month and publishes the
+# new snapshot.
+#
+# The whole thesis of this dataset is that it grows: a static one-off would be
+# the commodity utility that anyone can rebuild, and the monthly upkeep is the
+# product. Doing that by hand means the product stops the first month nobody
+# remembers, and stops silently.
+#
+# It publishes without anyone reading the diff, so check-refresh.mjs has to
+# refuse anything that looks like a broken scrape rather than a new month — a
+# deterministic extractor whose selectors stop matching produces a smaller
+# valid file, which is the failure that looks like success.
+
+name: Refresh the dataset
+
+on:
+  schedule:
+    - cron: "0 21 5 * *"    # 06:00 JST on the 5th
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Keep the previous meta for comparison
+        run: cp data/meta.json /tmp/previous-meta.json
+
+      - name: Re-read the agency's releases
+        run: npm run build
+
+      - name: Refuse a broken scrape
+        run: node scripts/check-refresh.mjs /tmp/previous-meta.json
+
+      - name: Test
+        run: npm test
+
+      - name: Stop here if nothing new
+        id: diff
+        run: |
+          if git diff --quiet -- data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "新しい処分はなかった"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A new snapshot is a new version: the registry pins the bundle by hash,
+      # so refreshed data that keeps the old version number would leave every
+      # client installing the old month forever.
+      - name: Bump the version and re-pin the bundle
+        if: steps.diff.outputs.changed == 'true'
+        id: bump
+        run: |
+          VERSION=$(node -e "
+            const fs = require('node:fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            const [major, minor, patch] = pkg.version.split('.').map(Number);
+            const next = [major, minor, patch + 1].join('.');
+            pkg.version = next;
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+            const server = JSON.parse(fs.readFileSync('server.json', 'utf8'));
+            server.version = next;
+            server.packages[0].identifier = server.packages[0].identifier
+              .replace(/\/download\/v[^/]+\//, '/download/v' + next + '/');
+            fs.writeFileSync('server.json', JSON.stringify(server, null, 2) + '\n');
+            console.log(next);
+          ")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Build once to learn the new bundle's hash, write it into server.json,
+          # then build again so the committed hash is checked against the bytes.
+          npm run build:mcpb || true
+          node -e "
+            const fs = require('node:fs');
+            const sha = fs.readFileSync('build/keihyo-cases.mcpb.sha256', 'utf8').trim();
+            const server = JSON.parse(fs.readFileSync('server.json', 'utf8'));
+            server.packages[0].fileSha256 = sha;
+            fs.writeFileSync('server.json', JSON.stringify(server, null, 2) + '\n');
+          "
+          npm run build:mcpb
+
+      - name: Commit and tag
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  keihyo-cases
+          git config user.email noreply@github.com
+          COUNT=$(node -p "require('./data/meta.json').case_count")
+          git add data package.json server.json
+          git commit -m "Refresh: ${COUNT} cases
+
+Re-read from the Consumer Affairs Agency's releases. Version bumped because
+the registry pins the bundle by hash, so a refreshed snapshot under the old
+version would leave clients installing the old month."
+          git push
+          # The tag triggers publish-mcp.yml, which releases the bundle and
+          # publishes the new version to the MCP Registry.
+          git tag "v${{ steps.bump.outputs.version }}"
+          git push origin "v${{ steps.bump.outputs.version }}"

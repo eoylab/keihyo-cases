@@ -16,7 +16,8 @@
     "build": "node src/ingest/build.mjs",
     "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
     "metrics": "node scripts/metrics.mjs",
-    "build:mcpb": "node scripts/build-mcpb.mjs"
+    "build:mcpb": "node scripts/build-mcpb.mjs",
+    "check:refresh": "node scripts/check-refresh.mjs"
   },
   "keywords": [
     "mcp",
