@@ -1,0 +1,9 @@
+{
+  "built_from": "2016..2026",
+  "case_count": 151,
+  "unparsed_count": 18,
+  "source": "出典: 消費者庁ウェブサイト",
+  "source_index": "https://www.caa.go.jp/policies/policy/representation/fair_labeling/release/{fiscal_year}/",
+  "licence": "公共データ利用規約(第1.0版) / PDL1.0",
+  "processing": "索引と個別ページから決定論的に抽出・構造化したもの。文言の改変はしていない"
+}

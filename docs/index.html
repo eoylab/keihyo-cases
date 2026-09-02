@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>景品表示法 措置命令・課徴金納付命令 一覧 | keihyo-cases</title>
+<meta name="description" content="消費者庁が公表した景品表示法の措置命令・課徴金納付命令を、事業者名・条項・公表日で検索できる一覧。全件に出典URLつき。データセットとMCPサーバーとして再利用できます。">
+<style>
+:root{--ink:#1c1c1e;--muted:#61616b;--line:#e2e2e6;--bg:#fff;--accent:#8a2b2b;--soft:#faf5f5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.8;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-feature-settings:"palt" 1}
+.wrap{max-width:56rem;margin:0 auto;padding:0 1.25rem}
+header{border-bottom:1px solid var(--line);padding:1.5rem 0}
+h1{font-size:1.4rem;margin:0 0 .4rem}
+.lede{color:var(--muted);font-size:.92rem;margin:0}
+.controls{display:flex;gap:.6rem;flex-wrap:wrap;padding:1.2rem 0;border-bottom:1px solid var(--line)}
+input,select{font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;background:#fff}
+input{flex:1;min-width:14rem}
+.count{color:var(--muted);font-size:.88rem;padding:.9rem 0}
+.case{border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;margin:.8rem 0}
+.case .top{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.date{color:var(--muted);font-size:.86rem;font-variant-numeric:tabular-nums}
+.tag{font-size:.78rem;padding:.15rem .5rem;border-radius:4px;background:var(--soft);
+  color:var(--accent);font-weight:700;white-space:nowrap}
+.company{font-weight:700;font-size:1.02rem}
+.lead{font-size:.9rem;color:var(--ink);margin:.5rem 0 0;line-height:1.75}
+.prov{margin:.5rem 0 0;font-size:.82rem;color:var(--muted)}
+.prov span{border:1px solid var(--line);border-radius:4px;padding:.1rem .4rem;margin-right:.3rem;
+  display:inline-block;white-space:nowrap}
+.case a{color:var(--accent);font-size:.85rem}
+footer{border-top:1px solid var(--line);margin-top:2rem;padding:1.4rem 0 3rem;
+  color:var(--muted);font-size:.84rem;line-height:1.9}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>景品表示法 措置命令・課徴金納付命令 一覧</h1>
+<p class="lede">消費者庁が公表した処分を、事業者名・条項・公表日で検索できます。全件に出典URLがあります。<strong>違反の判定はしていません</strong> — 各件は既に発出された処分の再記述です。</p>
+</div></header>
+
+<div class="wrap">
+<div class="controls">
+  <input id="q" type="search" placeholder="事業者名・商品名・本文で検索">
+  <select id="type"><option value="">処分の種類（すべて）</option></select>
+  <select id="prov"><option value="">条項（すべて）</option></select>
+  <select id="year"><option value="">年度（すべて）</option></select>
+</div>
+<p class="count" id="count">読み込み中…</p>
+<div id="list"></div>
+</div>
+
+<footer><div class="wrap">
+<p><strong>出典: 消費者庁ウェブサイト</strong>（各件のリンク先が一次情報です）。
+索引と個別ページから決定論的に抽出・構造化したもので、<strong>文言の改変はしていません</strong>。
+編集・加工の主体は keihyo-cases です。</p>
+<p>元データは<a href="https://www.caa.go.jp/terms_of_use/">公共データ利用規約（第1.0版）</a>に準拠します。
+コードは MIT。<a href="https://github.com/eoylab/keihyo-cases">GitHub</a> でデータセット（JSON / JSONL / CSV）と MCP サーバーを配布しています。</p>
+<p>抽出できなかった発表は推測で埋めず <code>data/unparsed.json</code> に残しています。</p>
+</div></footer>
+
+<script>
+const state = { cases: [], q:'', type:'', prov:'', year:'' };
+const el = (id) => document.getElementById(id);
+
+fetch('./cases.json').then((r) => r.json()).then((cases) => {
+  state.cases = cases;
+  fill('type', [...new Set(cases.map((c) => c.order_type))]);
+  fill('prov', [...new Set(cases.flatMap((c) => c.provisions))].sort());
+  fill('year', [...new Set(cases.map((c) => c.fiscal_year))].sort((a,b)=>b-a));
+  render();
+}).catch(() => { el('count').textContent = 'データを読み込めませんでした'; });
+
+function fill(id, values) {
+  for (const v of values) {
+    const option = document.createElement('option');
+    option.value = v; option.textContent = v;
+    el(id).append(option);
+  }
+}
+
+for (const id of ['q','type','prov','year']) {
+  el(id).addEventListener('input', () => { state[id] = el(id).value; render(); });
+}
+
+function render() {
+  const found = state.cases.filter((c) =>
+    (state.q === '' || [c.company, c.title, c.lead_text, c.product?.name]
+      .filter(Boolean).join(' ').includes(state.q))
+    && (state.type === '' || c.order_type === state.type)
+    && (state.prov === '' || c.provisions.includes(state.prov))
+    && (state.year === '' || String(c.fiscal_year) === state.year));
+
+  el('count').textContent = `${found.length} 件 / 全 ${state.cases.length} 件`;
+  el('list').replaceChildren(...found.map((c) => {
+    const box = document.createElement('div');
+    box.className = 'case';
+    const top = document.createElement('div');
+    top.className = 'top';
+    top.append(
+      Object.assign(document.createElement('span'), { className:'date', textContent:c.published_date }),
+      Object.assign(document.createElement('span'), { className:'tag', textContent:c.order_type }),
+      Object.assign(document.createElement('span'), { className:'company', textContent:c.company }),
+    );
+    const prov = document.createElement('p');
+    prov.className = 'prov';
+    prov.append(...c.provisions.map((p) => Object.assign(document.createElement('span'), { textContent:p })));
+    const link = document.createElement('a');
+    link.href = c.url; link.textContent = '消費者庁の公表ページ →';
+    link.rel = 'noopener'; link.target = '_blank';
+    box.append(top, prov,
+      Object.assign(document.createElement('p'), { className:'lead', textContent:c.lead_text }),
+      link);
+    return box;
+  }));
+}
+</script>
+</body>
+</html>
