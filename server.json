@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.eoylab/keihyo-cases",
   "title": "景品表示法 措置命令・課徴金納付命令",
-  "description": "Japanese advertising-law enforcement actions under 景品表示法: cease-and-desist and surcharge payment orders published by the Consumer Affairs Agency, with the cited provisions and a source URL on every record. States no verdict of its own.",
+  "description": "Japan's 景表法 enforcement orders (措置命令・課徴金) with cited provisions and source URLs. No verdicts.",
   "version": "0.1.0",
   "repository": {
     "url": "https://github.com/eoylab/keihyo-cases",
