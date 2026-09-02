@@ -1,0 +1,79 @@
+# Publishes this server to the official MCP Registry when a v* tag is pushed.
+#
+# Why this exists as a workflow rather than a command run locally: registry
+# authentication is either a browser device flow or GitHub Actions OIDC, and
+# only the second one can happen without a person sitting at a screen. The
+# workflow needs no secret — `id-token: write` is the whole credential.
+#
+# Why MCPB rather than npm: the registry lists metadata, not artefacts, so the
+# package has to be fetchable from somewhere it recognises. Every option except
+# an MCPB file on a GitHub release requires registering an account on another
+# service, and MCPB reaches the same registry with the token that already owns
+# this repository.
+
+name: Publish to MCP Registry
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC — this is the only credential involved
+      contents: write   # to create the release the registry will fetch from
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Test
+        run: npm test
+
+      # The tag, package.json, server.json and the URL inside server.json all
+      # name a version. If they disagree, the registry gets a manifest pointing
+      # at a release that does not exist, so this stops before publishing
+      # rather than after.
+      - name: Check the versions agree
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          PKG=$(node -p "require('./package.json').version")
+          SRV=$(node -p "require('./server.json').version")
+          URL=$(node -p "require('./server.json').packages[0].identifier")
+          echo "tag=$TAG package.json=$PKG server.json=$SRV"
+          [ "$TAG" = "$PKG" ] || { echo "::error::タグと package.json の version が違う"; exit 1; }
+          [ "$TAG" = "$SRV" ] || { echo "::error::タグと server.json の version が違う"; exit 1; }
+          case "$URL" in
+            *"/download/v$TAG/"*) ;;
+            *) echo "::error::server.json の identifier がこのタグを指していない: $URL"; exit 1 ;;
+          esac
+
+      # Fails if the bundle's SHA-256 differs from the one committed in
+      # server.json — which is what would happen if the data changed and nobody
+      # updated the manifest. The registry pins the artefact by that hash, so a
+      # stale one publishes a server nobody can install.
+      - name: Build the MCPB bundle
+        run: npm run build:mcpb
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF#refs/tags/}" \
+            build/keihyo-cases.mcpb \
+            --title "${GITHUB_REF#refs/tags/}" \
+            --notes "MCPB bundle for the MCP Registry. Contains the server and the ${{ github.ref_name }} data snapshot. SHA-256 is pinned in server.json."
+
+      - name: Install mcp-publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to the MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish
+        run: ./mcp-publisher publish

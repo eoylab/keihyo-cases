@@ -4,14 +4,36 @@
   "description": "景品表示法の措置命令・課徴金納付命令のデータセットと MCP サーバー / Dataset and MCP server for Japanese advertising-law enforcement actions",
   "type": "module",
   "license": "MIT",
-  "bin": { "keihyo-mcp": "src/mcp/server.mjs" },
-  "files": ["src", "data", "DATA-LICENSE.md"],
+  "bin": {
+    "keihyo-mcp": "src/mcp/server.mjs"
+  },
+  "files": [
+    "src",
+    "data",
+    "DATA-LICENSE.md"
+  ],
   "scripts": {
     "build": "node src/ingest/build.mjs",
     "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
-    "metrics": "node scripts/metrics.mjs"
+    "metrics": "node scripts/metrics.mjs",
+    "build:mcpb": "node scripts/build-mcpb.mjs"
   },
-  "keywords": ["mcp", "model-context-protocol", "japan", "japanese", "legal", "compliance", "advertising", "open-data", "dataset"],
-  "repository": { "type": "git", "url": "https://github.com/eoylab/keihyo-cases.git" },
-  "engines": { "node": ">=22" }
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "japan",
+    "japanese",
+    "legal",
+    "compliance",
+    "advertising",
+    "open-data",
+    "dataset"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eoylab/keihyo-cases.git"
+  },
+  "engines": {
+    "node": ">=22"
+  }
 }
