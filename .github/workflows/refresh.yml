@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # OIDC — publishes the new month to the registry in this job
 
 jobs:
   refresh:
@@ -44,10 +45,14 @@ jobs:
       - name: Test
         run: npm test
 
+      # meta.json is excluded on purpose. It records the scan range, which can
+      # change without a single case changing — that is what happened on the
+      # first run, and it bumped a version and republished an identical
+      # dataset. The trigger is the data clients actually read.
       - name: Stop here if nothing new
         id: diff
         run: |
-          if git diff --quiet -- data; then
+          if git diff --quiet -- data/cases.json data/cases.jsonl data/cases.csv data/unparsed.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "新しい処分はなかった"
           else
@@ -88,7 +93,7 @@ jobs:
           "
           npm run build:mcpb
 
-      - name: Commit and tag
+      - name: Commit
         if: steps.diff.outputs.changed == 'true'
         run: |
           git config user.name  keihyo-cases
@@ -97,7 +102,14 @@ jobs:
           git add data package.json server.json
           git commit -m "Refresh: ${COUNT} cases" -m "Re-read from the Consumer Affairs Agency's releases. Version bumped because the registry pins the bundle by hash, so a refreshed snapshot under the old version would leave clients installing the old month."
           git push
-          # The tag triggers publish-mcp.yml, which releases the bundle and
-          # publishes the new version to the MCP Registry.
-          git tag "v${{ steps.bump.outputs.version }}"
-          git push origin "v${{ steps.bump.outputs.version }}"
+
+      # Published from this job rather than by pushing a tag. A tag pushed with
+      # the job's own GITHUB_TOKEN does not start another workflow — GitHub
+      # blocks that to stop workflows triggering themselves — so the first run
+      # committed and tagged and then quietly published nothing. The chain has
+      # to end here or it ends silently.
+      - name: Release and publish to the MCP Registry
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/publish-registry.sh "${{ steps.bump.outputs.version }}"

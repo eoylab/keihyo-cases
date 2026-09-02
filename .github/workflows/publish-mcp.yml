@@ -59,28 +59,7 @@ jobs:
       - name: Build the MCPB bundle
         run: npm run build:mcpb
 
-      # Idempotent: the registry rejected a manifest once for an unrelated
-      # reason after the release already existed, and a create that fails on
-      # the second attempt turns one fixable error into two.
-      - name: Create or update the release
+      - name: Release and publish
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          NOTES="MCPB bundle for the MCP Registry. Contains the server and the $TAG data snapshot. SHA-256 is pinned in server.json."
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --title "$TAG" --notes "$NOTES"
-            gh release upload "$TAG" build/keihyo-cases.mcpb --clobber
-          else
-            gh release create "$TAG" build/keihyo-cases.mcpb --title "$TAG" --notes "$NOTES"
-          fi
-
-      - name: Install mcp-publisher
-        run: |
-          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
-
-      - name: Authenticate to the MCP Registry
-        run: ./mcp-publisher login github-oidc
-
-      - name: Publish
-        run: ./mcp-publisher publish
+        run: scripts/publish-registry.sh "${GITHUB_REF#refs/tags/v}"
