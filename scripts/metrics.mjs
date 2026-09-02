@@ -76,10 +76,14 @@ snapshot.commercialInterest = issues.map((issue) => ({
   comments: issue.comments,
 })).sort((a, b) => a.number - b.number);
 
-// Views of the page that explains the paid options. Reaching it means clicking
-// past the free dataset, which is a weaker signal than a 👍 but a much larger
-// sample, and it needs no GitHub account — so it catches the buyer who is not
-// the developer.
+// Views of the page that explains the paid options.
+//
+// Whether this can move at all is unverified: the traffic API documents paths
+// under github.com/owner/repo, and it is not confirmed that views of the
+// GitHub Pages site appear there. If they do not, this is permanently zero —
+// so DECISION.md no longer uses it as a condition. A metric that cannot move
+// makes "nobody arrived" and "nobody cared" impossible to tell apart, which is
+// the one distinction the fortnight exists to make.
 const commercialPage = snapshot.paths.find((p) => p.path.endsWith('/commercial.html'));
 snapshot.commercialPageViews = commercialPage
   ? { count: commercialPage.count, uniques: commercialPage.uniques }

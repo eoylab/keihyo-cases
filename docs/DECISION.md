@@ -37,7 +37,7 @@ Registry 経由の導入は clone にもGitHubのtrafficにも現れないので
 | unique views | 到達 |
 | **referrers** | **MCP ディレクトリ経由なら開発者、検索経由なら実務者** |
 | paths | README で止まったか、`data/cases.json` まで取ったか |
-| **commercial.html uniques** | 無料部分を通り過ぎて有料の話を読んだ数。**GitHubアカウント不要なので、開発者でない購買者を捕まえる** |
+| **commercial.html uniques** | 無料部分を通り過ぎて有料の話を読んだ数。**ただし、これが動くかは未確認**。traffic API の `popular/paths` が返すのは `github.com/owner/repo/...` のパスで、GitHub Pages 側のビューが含まれるかを確認していない。**含まれない場合この値は常に0になる**ので、0を「関心なし」と読まないこと |
 | **Issue の 👍** | 価格に対して手が挙がった数。5案のどれが要るかを分離する |
 | **Issue のコメント** | 用途・頻度・件数を書く手間を払った数。**👍 より重い。1件でも実在の需要** |
 
@@ -71,7 +71,9 @@ MCP ディレクトリへの PR、検索で見つかる形（処分事例ペー�
 
 ### C. Monetization failure — 使われるが、金は出ない
 
-**判定：** unique clones + .mcpb DL ≥ 10 **かつ** 👍 合計 0 **かつ** commercial.html uniques < 5
+**判定：** unique clones + .mcpb DL ≥ 10 **かつ** 👍 合計 0 **かつ** コメント 0
+
+（commercial.html の uniques は判定に使わない。上記のとおり測れているか確認できていないため。**測れていない指標を条件に入れると、届いていないことと関心が無いことを区別できなくなる。**）
 
 **製品は当たっている。収益仮説だけが死んでいる。**
 無料のデータセットとしては成立しているので、**製品は Kill しない。**
