@@ -1,0 +1,34 @@
+# Opens the judgement issue on the pre-committed date.
+#
+# Runs daily and does nothing until the date arrives, so a skipped run costs
+# nothing and a missed day is picked up the next. It opens each judgement once.
+#
+# This exists so that no person has to remember a date. An experiment whose
+# judgement depends on someone recalling it on the right day is an experiment
+# that quietly runs forever, and the whole value of fixing the criteria in
+# advance is lost the moment the date passes unnoticed.
+
+name: Judgement dates
+
+on:
+  schedule:
+    - cron: "41 21 * * *"   # 06:41 JST, daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PUBLISHED_ON: "2026-09-02"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: gh label create judgement --color 5319E7 --description "期日の来た判定" || true
+      - run: node scripts/judgement.mjs 14
