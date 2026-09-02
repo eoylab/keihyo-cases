@@ -13,12 +13,9 @@
 // data/cases.json — because the server resolves its data with a relative path
 // and a flattened bundle would ship a server that cannot find its own data.
 
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import {
-  cpSync, mkdirSync, rmSync, readFileSync, writeFileSync, readdirSync, utimesSync,
-} from 'node:fs';
-import { join } from 'node:path';
+import { cpSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
+import { crc32 } from 'node:zlib';
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 const stage = 'build/mcpb';
@@ -68,28 +65,88 @@ const manifest = {
 };
 writeFileSync(`${stage}/manifest.json`, `${JSON.stringify(manifest, null, 2)}\n`);
 
-// Fixed timestamps on everything before zipping.
+// The archive is written here rather than shelled out to `zip`.
 //
-// The registry pins the artefact by SHA-256, and server.json carries that hash
-// in the repository — so the hash committed here has to be the hash CI produces
-// from the same tree, or the workflow publishes a manifest that does not match
-// its own artefact. A zip stores each entry's mtime, and cpSync stamps the copy
-// with the current time, so without this the bytes differ on every build and
-// the committed hash would be wrong the moment CI ran. -X drops the platform
-// attributes for the same reason.
-const EPOCH = new Date('2026-01-01T00:00:00Z');
-const stamp = (dir) => {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) stamp(full);
-    utimesSync(full, EPOCH, EPOCH);
-  }
-  utimesSync(dir, EPOCH, EPOCH);
-};
-stamp(stage);
+// server.json commits the SHA-256 the registry pins the artefact by, so the
+// hash produced on this machine has to be the hash CI produces from the same
+// tree. `zip` did not give that: the macOS and Ubuntu builds came out the same
+// length and different bytes, because the archive records the writing tool's
+// own version and whatever order the directory happened to enumerate in.
+//
+// So: entries in sorted order, stored uncompressed, one fixed timestamp. No
+// compression because a deflate stream is only identical across zlib versions
+// by luck, and the whole bundle is 185KB — small enough that trading the
+// compression for a hash that means something is not a trade at all.
+const FILES = [
+  'DATA-LICENSE.md',
+  'LICENSE',
+  'README.md',
+  'data/cases.json',
+  'manifest.json',
+  'src/mcp/server.mjs',
+].sort();
+// 2026-01-01 00:00:00 in the DOS fields a zip uses (year counted from 1980).
+const DOS_TIME = 0;
+const DOS_DATE = ((2026 - 1980) << 9) | (1 << 5) | 1;
+
+const locals = [];
+const central = [];
+let offset = 0;
+for (const name of FILES) {
+  const nameBytes = Buffer.from(name, 'utf8');
+  const content = readFileSync(`${stage}/${name}`);
+  const sum = crc32(content);
+
+  const local = Buffer.alloc(30 + nameBytes.length);
+  local.writeUInt32LE(0x04034b50, 0);   // local file header
+  local.writeUInt16LE(20, 4);           // version needed
+  local.writeUInt16LE(0x0800, 6);       // flags: names are UTF-8
+  local.writeUInt16LE(0, 8);            // method 0 = stored
+  local.writeUInt16LE(DOS_TIME, 10);
+  local.writeUInt16LE(DOS_DATE, 12);
+  local.writeUInt32LE(sum, 14);
+  local.writeUInt32LE(content.length, 18);
+  local.writeUInt32LE(content.length, 22);
+  local.writeUInt16LE(nameBytes.length, 26);
+  local.writeUInt16LE(0, 28);           // no extra field
+  nameBytes.copy(local, 30);
+  locals.push(local, content);
+
+  const entry = Buffer.alloc(46 + nameBytes.length);
+  entry.writeUInt32LE(0x02014b50, 0);   // central directory header
+  entry.writeUInt16LE(20, 4);           // version made by
+  entry.writeUInt16LE(20, 6);           // version needed
+  entry.writeUInt16LE(0x0800, 8);
+  entry.writeUInt16LE(0, 10);
+  entry.writeUInt16LE(DOS_TIME, 12);
+  entry.writeUInt16LE(DOS_DATE, 14);
+  entry.writeUInt32LE(sum, 16);
+  entry.writeUInt32LE(content.length, 20);
+  entry.writeUInt32LE(content.length, 24);
+  entry.writeUInt16LE(nameBytes.length, 28);
+  entry.writeUInt32LE(0, 30);           // extra + comment lengths
+  entry.writeUInt16LE(0, 34);           // disk number
+  entry.writeUInt16LE(0, 36);           // internal attributes
+  // Unix mode in the high 16 bits. `<<` is a signed 32-bit operation in
+  // JavaScript, so shifting 0o100644 that far makes it negative; multiplying
+  // keeps it in the unsigned range writeUInt32LE accepts.
+  entry.writeUInt32LE(0o100644 * 0x10000, 38); // regular file, rw-r--r--
+  entry.writeUInt32LE(offset, 42);
+  nameBytes.copy(entry, 46);
+  central.push(entry);
+
+  offset += local.length + content.length;
+}
+const directory = Buffer.concat(central);
+const end = Buffer.alloc(22);
+end.writeUInt32LE(0x06054b50, 0);       // end of central directory
+end.writeUInt16LE(FILES.length, 8);
+end.writeUInt16LE(FILES.length, 10);
+end.writeUInt32LE(directory.length, 12);
+end.writeUInt32LE(offset, 16);
 
 const out = 'build/keihyo-cases.mcpb';
-execFileSync('zip', ['-q', '-r', '-X', '../keihyo-cases.mcpb', '.'], { cwd: stage });
+writeFileSync(out, Buffer.concat([...locals, directory, end]));
 
 const bytes = readFileSync(out);
 const sha = createHash('sha256').update(bytes).digest('hex');

@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/eoylab/keihyo-cases/releases/download/v0.1.0/keihyo-cases.mcpb",
-      "fileSha256": "f143a8115d7f3d1471e529bf2bf7642e530997e8dbd9e140c23f68ea0fd235dd",
+      "fileSha256": "66c51eb7351a4dcd164e7075f816ed704e7b0d21e41afb04b3bf7b3089e77129",
       "transport": {
         "type": "stdio"
       }
