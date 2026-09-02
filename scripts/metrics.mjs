@@ -33,6 +33,15 @@ const snapshot = {
   referrers: api('traffic/popular/referrers'),
   paths: api('traffic/popular/paths'),
 };
+// Installs through the MCP Registry never touch `git clone` — the client
+// fetches the .mcpb straight off the release. So the asset's download count is
+// a separate arrival path from clones, and reading only clones would score a
+// registry install as no interest at all.
+snapshot.releaseDownloads = api('releases?per_page=100').flatMap((release) =>
+  release.assets.map((asset) => ({
+    tag: release.tag_name, name: asset.name, downloads: asset.download_count,
+  })));
+
 const repo = api('');
 snapshot.stars = repo.stargazers_count;
 snapshot.forks = repo.forks_count;
@@ -62,6 +71,7 @@ snapshot.commercialPageViews = commercialPage
 
 snapshot.totals = {
   uniqueClones: snapshot.clones.uniques,
+  mcpbDownloads: snapshot.releaseDownloads.reduce((n, a) => n + a.downloads, 0),
   uniqueViews: snapshot.views.uniques,
   thumbsUp: snapshot.commercialInterest.reduce((n, i) => n + i.thumbsUp, 0),
   commercialComments: snapshot.commercialInterest.reduce((n, i) => n + i.comments, 0),
@@ -77,6 +87,7 @@ console.log(`${file}\n`);
 console.log('  需要（使われるか）');
 console.log(`    views     ${snapshot.views.count} (uniques ${t.uniqueViews})`);
 console.log(`    clones    ${snapshot.clones.count} (uniques ${t.uniqueClones})`);
+console.log(`    .mcpb DL  ${t.mcpbDownloads}  ← MCP Registry 経由の導入はここに出る（clone には出ない）`);
 console.log(`    stars ${snapshot.stars}  forks ${snapshot.forks}  watchers ${snapshot.watchers}`);
 console.log(`    referrers ${snapshot.referrers.map((r) => `${r.referrer}:${r.uniques}`).join(' ') || '(none)'}`);
 console.log('\n  支払意思（金を払うか）');

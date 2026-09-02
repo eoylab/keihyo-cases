@@ -123,6 +123,26 @@ npm test               # 保存したページに対して逐語一致を検証
 
 取得は1リクエスト/秒、連絡先を含む User-Agent で行います。
 
+### 公式 MCP Registry から入れる
+
+[MCP Registry](https://registry.modelcontextprotocol.io/) に
+`io.github.eoylab/keihyo-cases` として登録してあります。
+対応クライアントはこの名前で導入できます。
+
+手で入れる場合は、リリースの `.mcpb` を使ってください
+（データが同梱されているので、実行時に通信しません）。
+
+```json
+{
+  "mcpServers": {
+    "keihyo-cases": {
+      "command": "node",
+      "args": ["/path/to/keihyo-cases/src/mcp/server.mjs"]
+    }
+  }
+}
+```
+
 ## 商用利用・Hosted API・日次更新
 
 **元データは消費者庁の[公共データ利用規約（PDL1.0）](https://www.caa.go.jp/terms_of_use/)準拠、

@@ -9,8 +9,12 @@
 
 | | 指標 | 答える問い |
 |---|---|---|
-| **需要** | unique clones / unique views / referrers | **使われるか** |
+| **需要** | unique clones / **.mcpb ダウンロード数** / unique views / referrers | **使われるか** |
 | **支払意思** | `commercial.html` の uniques / Issue #1〜#5 の 👍 / コメント | **金を払うか** |
+
+**導入は2つの経路で起きる。** `git clone` と、**MCP Registry からの .mcpb ダウンロード**である。
+Registry 経由の導入は clone にもGitHubのtrafficにも現れないので、
+**clones だけを見ると Registry からの導入がゼロに見える。** 両方を足して読む。
 
 **clones は支払意思の指標ではない。** clone する側の費用はゼロなので、
 何件 clone されても、こちらが費用を負担する部分（ホスティング・日次更新・保証）に
@@ -22,6 +26,7 @@
 | 指標 | 何を意味するか |
 |---|---|
 | **unique clones** | 手元へ置いた数。README を読んだだけでは増えない |
+| **.mcpb ダウンロード数** | **MCP Registry 経由の導入。clone には一切出ない別経路** |
 | unique views | 到達 |
 | **referrers** | **MCP ディレクトリ経由なら開発者、検索経由なら実務者** |
 | paths | README で止まったか、`data/cases.json` まで取ったか |
@@ -46,7 +51,7 @@ MCP ディレクトリへの PR、検索で見つかる形（処分事例ペー�
 
 ### B. Problem failure — 見られたが、要らない
 
-**判定：** unique views ≥ 30 **かつ** unique clones < 5
+**判定：** unique views ≥ 30 **かつ** unique clones + .mcpb DL < 5
 
 到達しているのに手元へ置かれない。**痛みの仮説が外れている。**
 「広告審査 AI が実在の処分を引用できない」という前提が、
@@ -59,7 +64,7 @@ MCP ディレクトリへの PR、検索で見つかる形（処分事例ペー�
 
 ### C. Monetization failure — 使われるが、金は出ない
 
-**判定：** unique clones ≥ 10 **かつ** 👍 合計 0 **かつ** commercial.html uniques < 5
+**判定：** unique clones + .mcpb DL ≥ 10 **かつ** 👍 合計 0 **かつ** commercial.html uniques < 5
 
 **製品は当たっている。収益仮説だけが死んでいる。**
 無料のデータセットとしては成立しているので、**製品は Kill しない。**
@@ -74,7 +79,7 @@ MCP ディレクトリへの PR、検索で見つかる形（処分事例ペー�
 
 ### 続ける条件
 
-**判定：** unique clones ≥ 25 **かつ** referrers に MCP ディレクトリ2つ以上
+**判定：** unique clones + .mcpb DL ≥ 25 **かつ** 外部経路（MCP Registry / ディレクトリ / 検索）2つ以上
 **または** 👍 が1案に3件以上 **または** コメントで具体的な用途が1件以上
 
 **その1案だけを作る。** 5案とも作らない。
