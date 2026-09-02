@@ -123,6 +123,31 @@ npm test               # 保存したページに対して逐語一致を検証
 
 取得は1リクエスト/秒、連絡先を含む User-Agent で行います。
 
+## 商用利用・Hosted API・日次更新
+
+**元データは消費者庁の[公共データ利用規約（PDL1.0）](https://www.caa.go.jp/terms_of_use/)準拠、
+コードは MIT です。現状のデータセットと MCP サーバーは、そのまま商用利用できます。**
+許可を買う必要はありません。この無料部分を後から有料に切り替えることもしません。
+
+そのうえで、**こちらが費用を負担する部分**（自前でホストしないエンドポイント、
+日次更新と webhook、稼働保証、過去分の遡り、導入支援）に需要があるか知りたい。
+
+**まだ一つも作っていません。** 要るものだけ作りたいので、価格を書いた Issue を置いています。
+
+| | 内容 | 目安 | 投票 |
+|---|---|---|---|
+| 1 | Hosted API | 月 ¥4,000 | [#1](https://github.com/eoylab/keihyo-cases/issues/1) |
+| 2 | 日次更新 / webhook | 月 ¥3,000 | [#2](https://github.com/eoylab/keihyo-cases/issues/2) |
+| 3 | 商用ライセンス / SLA | 月 ¥15,000 | [#3](https://github.com/eoylab/keihyo-cases/issues/3) |
+| 4 | bulk access / 過去分 | 単発 ¥30,000 | [#4](https://github.com/eoylab/keihyo-cases/issues/4) |
+| 5 | 導入支援 | 時間 ¥15,000 | [#5](https://github.com/eoylab/keihyo-cases/issues/5) |
+
+使いたいものに **👍** を付けてください。条件があればコメントでどうぞ。
+一覧に無いものが今週必要なら [Issue を立ててください](https://github.com/eoylab/keihyo-cases/issues/new) —
+仕組みが無いだけで、データはもうあります。
+
+詳細: <https://eoylab.github.io/keihyo-cases/commercial.html>
+
 ## 出典とライセンス
 
 **出典: 消費者庁ウェブサイト**（各レコードの `url` が一次情報）

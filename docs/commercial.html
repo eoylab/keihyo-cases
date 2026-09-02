@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>商用利用・Hosted API・自動更新について | keihyo-cases</title>
+<meta name="description" content="景品表示法の処分データセットの商用利用、Hosted API、日次更新の webhook、bulk access、導入支援について。無料のデータセットとMCPサーバーは無料のまま提供します。">
+<style>
+:root{--ink:#1c1c1e;--muted:#61616b;--line:#e2e2e6;--bg:#fff;--accent:#8a2b2b;--soft:#faf5f5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.8;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-feature-settings:"palt" 1}
+.wrap{max-width:48rem;margin:0 auto;padding:0 1.25rem}
+header{border-bottom:1px solid var(--line);padding:1.5rem 0}
+h1{font-size:1.35rem;margin:0 0 .4rem}
+h2{font-size:1.05rem;margin:2.2rem 0 .6rem}
+.lede{color:var(--muted);font-size:.92rem;margin:0}
+.back{font-size:.85rem;color:var(--muted);display:inline-block;margin:1.2rem 0 0}
+.note{background:var(--soft);border-left:3px solid var(--accent);padding:.9rem 1.1rem;
+  margin:1.4rem 0;font-size:.92rem}
+.opt{border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;margin:.9rem 0}
+.opt h3{margin:0 0 .35rem;font-size:1rem}
+.opt p{margin:.35rem 0;font-size:.9rem}
+.price{color:var(--accent);font-weight:700;font-size:.9rem;font-variant-numeric:tabular-nums}
+.vote{display:inline-block;margin-top:.6rem;font-size:.88rem;font-weight:700;
+  color:#fff;background:var(--accent);padding:.45rem .9rem;border-radius:6px;text-decoration:none}
+.free{border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;margin:1.4rem 0;
+  font-size:.92rem}
+footer{border-top:1px solid var(--line);margin-top:2.4rem;padding:1.4rem 0 3rem;
+  color:var(--muted);font-size:.84rem;line-height:1.9}
+footer a,.back{color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>商用利用・Hosted API・自動更新について</h1>
+<p class="lede">景品表示法の処分データセット（keihyo-cases）を業務で使う場合の話です。</p>
+</div></header>
+
+<div class="wrap">
+
+<div class="note">
+<strong>下に挙げたものは、まだ一つも存在しません。</strong>
+需要が確認できたものだけ作ります。価格は<strong>検討中の目安</strong>で、申し込み窓口ではありません。
+先に作って売れ残るより、要るものを聞いてから作りたいので、このページを置いています。
+</div>
+
+<div class="free">
+<strong>無料の部分は、無料のままです。</strong><br>
+データセット（JSON / JSONL / CSV・151件・出典URL付き）と MCP サーバーは
+<a href="https://github.com/eoylab/keihyo-cases">GitHub</a> で MIT / PDL1.0 のまま配布し続けます。
+下の有料案が成立しても、既にある無料部分を有料に切り替えることはしません。<br>
+<strong>元データは消費者庁の公共データ利用規約（PDL1.0）準拠、コードは MIT なので、
+現状でもそのまま商用利用できます。</strong>ライセンス上の許可を買う必要はありません。
+</div>
+
+<h2>要るかどうか知りたいもの</h2>
+
+<div class="opt">
+<h3>1. Hosted API</h3>
+<p>自分でホストせずに叩けるエンドポイント。<code>GET /cases?company=&amp;provision=&amp;since=</code></p>
+<p class="price">目安：月 ¥4,000（個人・検証用は無料枠）</p>
+<a class="vote" href="https://github.com/eoylab/keihyo-cases/issues/1">👍 で投票する（Issue #1）</a>
+</div>
+
+<div class="opt">
+<h3>2. 日次更新と webhook</h3>
+<p>処分は毎月増えます。日次で更新し、新規分だけ通知します（webhook / RSS / メール）。</p>
+<p class="price">目安：月 ¥3,000</p>
+<a class="vote" href="https://github.com/eoylab/keihyo-cases/issues/2">👍 で投票する（Issue #2）</a>
+</div>
+
+<div class="opt">
+<h3>3. 商用利用の条件を明文化したライセンス / SLA</h3>
+<p>稼働率・更新頻度・障害時の連絡先・データ誤りの訂正手順を書面にしたもの。
+ライセンスは既に商用可なので、これが要るのは<strong>社内稟議に提供元の保証が必要な場合</strong>です。</p>
+<p class="price">目安：月 ¥15,000</p>
+<a class="vote" href="https://github.com/eoylab/keihyo-cases/issues/3">👍 で投票する（Issue #3）</a>
+</div>
+
+<div class="opt">
+<h3>4. bulk access と過去分の遡り</h3>
+<p>現在は 2021-04 以降の 151 件です。それより前、または PDF 本文まで含めた全件。</p>
+<p class="price">目安：単発 ¥30,000</p>
+<a class="vote" href="https://github.com/eoylab/keihyo-cases/issues/4">👍 で投票する（Issue #4）</a>
+</div>
+
+<div class="opt">
+<h3>5. 導入支援</h3>
+<p>MCP / API を自社の審査フローに繋ぐところ。抽出項目の追加。</p>
+<p class="price">目安：時間 ¥15,000</p>
+<a class="vote" href="https://github.com/eoylab/keihyo-cases/issues/5">👍 で投票する（Issue #5）</a>
+</div>
+
+<h2>今すぐ必要な場合</h2>
+<p>「14日待たずに今週要る」なら、<a href="https://github.com/eoylab/keihyo-cases/issues/new">Issue を立ててください</a>。
+上の一覧に無いものでも、その1件のために手で用意します。
+仕組みが無いだけで、データはもうあります。</p>
+
+<h2>やらないこと</h2>
+<p><strong>違反かどうかの判定はしません。</strong>
+このデータは既に発出された処分の再記述で、「この表現は違反か」を判断する機能は入れません。
+広告表現の適否は個別事案ごとの判断で、機械的な OK / NG の一覧はセーフハーバーとして誤用されます。
+出典付きの事実を渡すところまでが範囲です。</p>
+
+<a class="back" href="./">← 一覧に戻る</a>
+</div>
+
+<footer><div class="wrap">
+<p><strong>出典: 消費者庁ウェブサイト。</strong>元データは<a href="https://www.caa.go.jp/terms_of_use/">公共データ利用規約（第1.0版）</a>に準拠。コードは MIT。</p>
+<p><a href="https://github.com/eoylab/keihyo-cases">github.com/eoylab/keihyo-cases</a></p>
+</div></footer>
+</body>
+</html>

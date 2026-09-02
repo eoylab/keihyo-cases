@@ -155,5 +155,54 @@
   "referrers": [],
   "paths": [],
   "stars": 0,
-  "forks": 0
+  "forks": 0,
+  "watchers": 0,
+  "commercialInterest": [
+    {
+      "number": 1,
+      "title": "Hosted API — 自分でホストせずに叩けるエンドポイントが欲しい",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 2,
+      "title": "毎日の自動更新 / 新しい処分が出たときの webhook",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 3,
+      "title": "商用利用の条件を明文化したライセンス / SLA",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 4,
+      "title": "bulk access — 全件の一括取得と、過去分の遡り",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 5,
+      "title": "commercial support — 自社データへの組み込みを手伝ってほしい",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    }
+  ],
+  "commercialPageViews": {
+    "count": 0,
+    "uniques": 0
+  },
+  "totals": {
+    "uniqueClones": 0,
+    "uniqueViews": 0,
+    "thumbsUp": 0,
+    "commercialComments": 0,
+    "commercialPageUniques": 0
+  }
 }
