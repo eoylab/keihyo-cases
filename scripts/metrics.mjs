@@ -17,7 +17,7 @@
 // hand raised against a price rather than against a free thing.
 
 import { execFileSync } from 'node:child_process';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 
 const REPO = 'eoylab/keihyo-cases';
 // The repo itself is `repos/owner/name`, not `repos/owner/name/` — a trailing
@@ -25,7 +25,23 @@ const REPO = 'eoylab/keihyo-cases';
 const api = (path) => JSON.parse(execFileSync('gh',
   ['api', path === '' ? `repos/${REPO}` : `repos/${REPO}/${path}`], { encoding: 'utf8' }));
 
+// Why this is not a scheduled workflow: the traffic endpoints refuse the token
+// GitHub Actions issues to a job ("Resource not accessible by integration"),
+// and the alternative — storing a user token with repo-wide scope as a secret
+// on a public repository — buys a cron at the price of a much larger blast
+// radius. It is not worth that.
+//
+// It does not need a cron either. Each call returns the full fourteen-day
+// series day by day, not just a total, so one run at any point inside a window
+// captures the whole window. The only thing lost is history older than
+// fourteen days, so the rule is simply: run this at least once a fortnight.
+// The warning below exists so a gap is visible instead of silent.
 const today = new Date().toISOString().slice(0, 10);
+const previous = existsSync('metrics')
+  ? readdirSync('metrics').filter((f) => f.endsWith('.json')).sort().at(-1)
+  : undefined;
+const gapDays = previous === undefined ? null
+  : Math.round((Date.parse(today) - Date.parse(previous.replace('.json', ''))) / 86400000);
 const snapshot = {
   date: today,
   views: api('traffic/views'),
@@ -84,6 +100,10 @@ writeFileSync(file, `${JSON.stringify(snapshot, null, 2)}\n`);
 
 const t = snapshot.totals;
 console.log(`${file}\n`);
+if (gapDays !== null && gapDays > 14) {
+  console.log(`  ⚠ 前回のスナップショットから ${gapDays} 日。`
+    + `GitHub は14日しか保持しないので、その間の日別データは失われている\n`);
+}
 console.log('  需要（使われるか）');
 console.log(`    views     ${snapshot.views.count} (uniques ${t.uniqueViews})`);
 console.log(`    clones    ${snapshot.clones.count} (uniques ${t.uniqueClones})`);
