@@ -11,7 +11,10 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 
 const REPO = 'eoylab/keihyo-cases';
-const api = (path) => JSON.parse(execFileSync('gh', ['api', `repos/${REPO}/${path}`], { encoding: 'utf8' }));
+// The repo itself is `repos/owner/name`, not `repos/owner/name/` — a trailing
+// slash 404s, which is how the first version of this failed.
+const api = (path) => JSON.parse(execFileSync('gh',
+  ['api', path === '' ? `repos/${REPO}` : `repos/${REPO}/${path}`], { encoding: 'utf8' }));
 
 const today = new Date().toISOString().slice(0, 10);
 const snapshot = {
