@@ -95,11 +95,7 @@ jobs:
           git config user.email noreply@github.com
           COUNT=$(node -p "require('./data/meta.json').case_count")
           git add data package.json server.json
-          git commit -m "Refresh: ${COUNT} cases
-
-Re-read from the Consumer Affairs Agency's releases. Version bumped because
-the registry pins the bundle by hash, so a refreshed snapshot under the old
-version would leave clients installing the old month."
+          git commit -m "Refresh: ${COUNT} cases" -m "Re-read from the Consumer Affairs Agency's releases. Version bumped because the registry pins the bundle by hash, so a refreshed snapshot under the old version would leave clients installing the old month."
           git push
           # The tag triggers publish-mcp.yml, which releases the bundle and
           # publishes the new version to the MCP Registry.
