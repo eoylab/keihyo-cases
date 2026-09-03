@@ -22,8 +22,26 @@ import { writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 const REPO = 'eoylab/keihyo-cases';
 // The repo itself is `repos/owner/name`, not `repos/owner/name/` — a trailing
 // slash 404s, which is how the first version of this failed.
-const api = (path) => JSON.parse(execFileSync('gh',
-  ['api', path === '' ? `repos/${REPO}` : `repos/${REPO}/${path}`], { encoding: 'utf8' }));
+const api = (path) => {
+  try {
+    return JSON.parse(execFileSync('gh',
+      ['api', path === '' ? `repos/${REPO}` : `repos/${REPO}/${path}`], { encoding: 'utf8' }));
+  } catch (error) {
+    const output = `${error.stdout ?? ''}${error.stderr ?? ''}`;
+    // The traffic endpoints require push access, so they answer 403 whenever
+    // the active `gh` account is not the one that owns this repository. That
+    // reads like a broken script and is not one.
+    if (output.includes('Must have push access')) {
+      console.error(`\n${REPO} の traffic を読む権限が無い。`
+        + `\nアクティブな gh アカウントがこのリポジトリの所有者ではない可能性がある。`
+        + `\n\n  gh auth status              # どのアカウントがアクティブか`
+        + `\n  GH_TOKEN=$(gh auth token --user ${REPO.split('/')[0]}) npm run metrics`
+        + `\n\nアカウントを切り替えるより、トークンを渡すほうが端末の状態を変えない。\n`);
+      process.exit(1);
+    }
+    throw error;
+  }
+};
 
 // Why this is not a scheduled workflow: the traffic endpoints refuse the token
 // GitHub Actions issues to a job ("Resource not accessible by integration"),
