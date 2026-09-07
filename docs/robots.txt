@@ -1,0 +1,8 @@
+# The pages are meant to be found by people looking for these orders.
+# The data files are not: a JSON blob in a search result helps nobody, and
+# the page that explains it is one click away.
+User-agent: *
+Allow: /
+Disallow: /keihyo-cases/cases.json
+
+Sitemap: https://eoylab.github.io/keihyo-cases/sitemap.xml
