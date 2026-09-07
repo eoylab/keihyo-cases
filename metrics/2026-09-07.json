@@ -1,0 +1,233 @@
+{
+  "date": "2026-09-07",
+  "views": {
+    "count": 1,
+    "uniques": 1,
+    "views": [
+      {
+        "timestamp": "2026-08-23T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-24T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-25T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-26T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-27T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-28T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-29T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-30T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-31T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-01T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-02T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-03T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-04T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-05T00:00:00Z",
+        "count": 1,
+        "uniques": 1
+      }
+    ]
+  },
+  "clones": {
+    "count": 130,
+    "uniques": 44,
+    "clones": [
+      {
+        "timestamp": "2026-08-23T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-24T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-25T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-26T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-27T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-28T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-29T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-30T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-08-31T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-01T00:00:00Z",
+        "count": 0,
+        "uniques": 0
+      },
+      {
+        "timestamp": "2026-09-02T00:00:00Z",
+        "count": 96,
+        "uniques": 29
+      },
+      {
+        "timestamp": "2026-09-03T00:00:00Z",
+        "count": 10,
+        "uniques": 7
+      },
+      {
+        "timestamp": "2026-09-04T00:00:00Z",
+        "count": 6,
+        "uniques": 4
+      },
+      {
+        "timestamp": "2026-09-05T00:00:00Z",
+        "count": 18,
+        "uniques": 10
+      }
+    ]
+  },
+  "referrers": [],
+  "paths": [
+    {
+      "path": "/eoylab/keihyo-cases",
+      "title": "Overview",
+      "count": 1,
+      "uniques": 1
+    }
+  ],
+  "releaseDownloads": [
+    {
+      "tag": "v0.1.2",
+      "name": "keihyo-cases.mcpb",
+      "downloads": 10
+    },
+    {
+      "tag": "v0.1.1",
+      "name": "keihyo-cases.mcpb",
+      "downloads": 16
+    },
+    {
+      "tag": "v0.1.0",
+      "name": "keihyo-cases.mcpb",
+      "downloads": 7
+    }
+  ],
+  "stars": 0,
+  "forks": 0,
+  "watchers": 0,
+  "commercialInterest": [
+    {
+      "number": 1,
+      "title": "Hosted API — 自分でホストせずに叩けるエンドポイントが欲しい",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 2,
+      "title": "毎日の自動更新 / 新しい処分が出たときの webhook",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 3,
+      "title": "商用利用の条件を明文化したライセンス / SLA",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 4,
+      "title": "bulk access — 全件の一括取得と、過去分の遡り",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    },
+    {
+      "number": 5,
+      "title": "commercial support — 自社データへの組み込みを手伝ってほしい",
+      "thumbsUp": 0,
+      "reactionsTotal": 0,
+      "comments": 0
+    }
+  ],
+  "commercialPageViews": {
+    "count": 0,
+    "uniques": 0
+  },
+  "totals": {
+    "uniqueClones": 44,
+    "mcpbDownloads": 33,
+    "uniqueViews": 1,
+    "thumbsUp": 0,
+    "commercialComments": 0,
+    "commercialPageUniques": 0
+  }
+}
