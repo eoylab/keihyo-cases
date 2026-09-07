@@ -11,6 +11,12 @@
 actions published by the Consumer Affairs Agency, plus an MCP server so a model
 can cite a real order instead of inventing one. Japanese-language source data.*
 
+## 姉妹データセット
+
+**[eoylab/jftc-actions](https://github.com/eoylab/jftc-actions)** — 公正取引委員会の排除措置命令・取適法勧告
+361件。同じ設計方針（判断しない・自然人を扱わない・出典URL付き）で作っています。
+両方を1つの表に揃えた統合バンドルもあります。
+
 ## これは何をしないか
 
 **違反の判定をしません。** 各レコードは、消費者庁が**既に発出して公表した処分**の再記述です。
