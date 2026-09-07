@@ -7,7 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { extractCase } from '../src/ingest/extract.mjs';
+import { extractCase, withoutNaturalPerson } from '../src/ingest/extract.mjs';
 
 test('every field comes from the page, verbatim', () => {
   const html = readFileSync('test/fixtures/entry-041488.html', 'utf8');
@@ -53,4 +53,35 @@ test('the index parser takes only enforcement entry links', () => {
   const ids = [...new Set([...html.matchAll(/href="\/notice\/entry\/(\d+)\/"/g)].map((m) => m[1]))];
   assert.ok(ids.length >= 20, `expected the 2024 index to list many entries, got ${ids.length}`);
   assert.ok(ids.every((id) => /^\d+$/.test(id)));
+});
+
+// A sole proprietor is published as 「〈屋号〉こと〈氏名〉」. This dataset states in
+// its README, and in the commercial-use document inside the paid bundle, that it
+// carries no representatives' names — and it carried one: 026954 shipped a real
+// person's name, inside a ZIP whose own paperwork denied it. A paid file that
+// asserts something untrue in a document written for someone's internal approval
+// is worse than the omission it was hiding.
+//
+// A detector, not a one-off edit: orders against sole proprietors keep being
+// issued, and the next one would put the name back without anyone noticing.
+test('a sole proprietor’s own name is not kept', () => {
+  assert.equal(withoutNaturalPerson('カーズショップ松山こと高畑正志'), 'カーズショップ松山');
+  assert.equal(withoutNaturalPerson('株式会社カーズショップ松山'), '株式会社カーズショップ松山');
+  // The first version cut 「まことや」 to 「ま」 — it matched the characters inside
+  // an ordinary trade name. Kana after the joiner, or a leading fragment shorter
+  // than three characters, now means "leave it exactly as published".
+  assert.equal(withoutNaturalPerson('まことや'), 'まことや');
+  assert.equal(withoutNaturalPerson('和菓子まことこと堂'), '和菓子まことこと堂');
+  assert.equal(withoutNaturalPerson('ことこと堂'), 'ことこと堂');
+  assert.equal(withoutNaturalPerson('こと'), 'こと');
+});
+
+test('no record carries a personal name after the joiner', () => {
+  const cases = JSON.parse(readFileSync('data/cases.json', 'utf8'));
+  for (const record of cases) {
+    const name = record.company ?? '';
+    const at = name.indexOf('こと');
+    assert.ok(at <= 0 || name.slice(at + 2).trim() === '',
+      `${record.id}: 屋号のあとに個人名が残っている — ${name}`);
+  }
 });

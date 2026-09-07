@@ -51,8 +51,50 @@ const company = (title) => {
   const at = title.indexOf('に対する');
   if (at <= 0) return null;
   const name = title.slice(0, at).trim();
-  return name === '' ? null : name;
+  if (name === '') return null;
+  return withoutNaturalPerson(name);
 };
+
+/**
+ * Removes a sole proprietor's own name from a published subject.
+ *
+ * A sole proprietor is published as 「〈屋号〉こと〈氏名〉」 — the agency names the
+ * trade name and then the individual behind it. This dataset says, in its README
+ * and in the commercial-use document that ships with the paid bundle, that it
+ * does not carry representatives' names. It carried one: 026954 shipped a real
+ * person's name in the `company` field, and the paid bundle shipped that name
+ * inside a ZIP whose own paperwork said no such name was present. A paid file
+ * asserting something untrue in a document written for someone's internal
+ * approval is worse than the omission.
+ *
+ * The trade name survives, because a trade name is a business identifier that
+ * the agency itself uses to name the respondent. The personal name does not.
+ *
+ * A detector rather than a one-off edit: orders against sole proprietors keep
+ * being issued, so the next one would reintroduce this silently.
+ */
+export function withoutNaturalPerson(name) {
+  const at = name.indexOf('こと');
+  if (at <= 0) return name;
+  const tradeName = name.slice(0, at).trim();
+  const after = name.slice(at + 2).trim();
+
+  // Two guards, because the first version of this truncated 「まことや」 to 「ま」
+  // — it found the characters こと inside an ordinary trade name and cut there.
+  // Corrupting a company name on a record about an enforcement action is the one
+  // error this dataset must never contain, so the rule refuses unless both hold:
+  //
+  //   - the trailing part is 2 to 5 characters of kanji only. Personal names in
+  //     these orders are written in kanji; 「まことや」's 「や」 is kana and fails
+  //   - the leading part is at least 3 characters, so a one-character fragment
+  //     can never be mistaken for a trade name
+  //
+  // Anything else is left exactly as published. Leaving a name intact is
+  // recoverable; cutting the wrong one is not.
+  const looksLikePersonalName = /^[\u4E00-\u9FFF]{2,5}$/.test(after);
+  if (!looksLikePersonalName || tradeName.length < 3) return name;
+  return tradeName;
+}
 
 /** Every 景品表示法 provision the page cites, in order, deduplicated. */
 const provisions = (text) => {
