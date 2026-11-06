@@ -3,7 +3,7 @@
   "name": "io.github.eoylab/keihyo-cases",
   "title": "景品表示法 措置命令・課徴金納付命令",
   "description": "Japan's 景表法 enforcement orders (措置命令・課徴金) with cited provisions and source URLs. No verdicts.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": {
     "url": "https://github.com/eoylab/keihyo-cases",
     "source": "github"
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/eoylab/keihyo-cases/releases/download/v0.1.2/keihyo-cases.mcpb",
-      "fileSha256": "ed313699b6b3b7feae9fe54b1c688cc4182982ccd20795abe72507d597903edb",
+      "identifier": "https://github.com/eoylab/keihyo-cases/releases/download/v0.1.3/keihyo-cases.mcpb",
+      "fileSha256": "2c4befaa0acf93a0eaae1cb43dab122d7da25d3408686fdef4ca99af880a97aa",
       "transport": {
         "type": "stdio"
       }
